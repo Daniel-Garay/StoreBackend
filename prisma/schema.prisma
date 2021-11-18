@@ -1,0 +1,39 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["mongoDb"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = "mongodb+srv://garaydaniel6:garaydaniel6@cluster0.18f7t.mongodb.net/Store?retryWrites=true&w=majority"
+}
+
+model User {
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  Name      String   
+  Email     String
+  balance   Int
+}
+
+model Product {
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  Description      String   
+  Price   Int
+  Sku     String
+}
+
+model PurchaseOrder {
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  UserId      String   
+  CreationDate DateTime @default(now())
+  TotalPrice   Int
+}
+
+model PurchaseOrderItems {
+  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+  PurchaseOrderId      String   
+  ProductId            String
+  Quantity   Int
+  Total   Int
+}
+
