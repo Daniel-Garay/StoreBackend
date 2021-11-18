@@ -1,9 +1,8 @@
 import {APIGatewayProxyHandler} from 'aws-lambda'
 import  'source-map-support/register'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../../../shared';
 
 export const getProducts: APIGatewayProxyHandler = async(event, _context) =>{
-  const prisma = new PrismaClient()
   const products = await prisma.product.findMany()
   return {
     statusCode: 200,

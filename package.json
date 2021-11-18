@@ -4,9 +4,8 @@
   "description": "Serverless aws-nodejs-typescript template",
   "main": "serverless.ts",
   "scripts": {
-    "test": "mocha --timeout 100000",
-    "dev": "ts-node-dev index.ts",
-    "start": "tsc -p ."
+    "dev": "serverless offline start",
+    "prod": "tsc -p ."
   },
   "engines": {
     "node": ">=14.15.0"
