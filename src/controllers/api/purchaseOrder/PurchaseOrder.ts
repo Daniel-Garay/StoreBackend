@@ -7,7 +7,7 @@ export const getPurchaseOrder: APIGatewayProxyHandler = async (
   event,
   _context
 ) => {
-  const purchaseOrder = await prisma.purchaseOrder.findMany();
+  const purchaseOrder = await prisma.purchaseOrders.findMany();
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -29,34 +29,34 @@ export const CreatePurchaseOrder: APIGatewayProxyHandler = async (
   let totalPrice = 0;
   let ListPurchaseOrderItems = [];
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.client.findMany({
     where: {
-      id: userId,
+      id: Number(userId),
     },
   });
 
   for (let i = 0; i < products.length; i++) {
-    const product = await prisma.product.findUnique({
+    const product = await prisma.product.findMany({
       where: {
         id: products[i].id,
       },
     });
     let partialPurchaseOrderItems = {
-      ProductId: product.id,
+      ProductId: product[0].id,
       Quantity: products[i].quantity,
-      Total: product.Price * products[i].quantity,
+      Total: product[0].price * products[i].quantity,
     };
     ListPurchaseOrderItems.push(partialPurchaseOrderItems);
 
-    totalPrice = totalPrice + product.Price * products[i].quantity;
+    totalPrice = totalPrice + product[0].price * products[i].quantity;
   }
-  if (totalPrice > user.balance) {
+  if (totalPrice > user[0].balance) {
     return {
       statusCode: 409,
       body: JSON.stringify(
         {
           successful: false,
-          error: `El usuario ${user.Name} no tiene saldo suficiente para comprar`,
+          error: `El usuario ${user[0].name} no tiene saldo suficiente para comprar`,
           reference: uuid.v1(),
         },
         null,
@@ -64,29 +64,30 @@ export const CreatePurchaseOrder: APIGatewayProxyHandler = async (
       ),
     };
   } else {
-    const purchaseOrder = await prisma.purchaseOrder.create({
+    const purchaseOrder = await prisma.purchaseOrders.create({
       data: {
-        UserId: userId,
-        TotalPrice: totalPrice,
+        userId: Number(userId),
+        totalPrice: Number(totalPrice),
+        creationDate: new Date(),
       },
     });
     for (let i = 0; i < ListPurchaseOrderItems.length; i++) {
       await prisma.purchaseOrderItems.create({
         data: {
-          PurchaseOrderId: purchaseOrder.id,
-          ProductId: ListPurchaseOrderItems[i].ProductId,
-          Quantity: ListPurchaseOrderItems[i].Quantity,
-          Total: ListPurchaseOrderItems[i].Total,
+          purchaseOrderId: purchaseOrder.id,
+          productId: ListPurchaseOrderItems[i].ProductId,
+          quantity: ListPurchaseOrderItems[i].Quantity,
+          total: ListPurchaseOrderItems[i].Total,
         },
       });
     }
 
-    await prisma.user.updateMany({
+    await prisma.client.updateMany({
       where: {
-        id: userId,
+        id: Number(userId),
       },
       data: {
-        balance: user.balance - totalPrice,
+        balance: user[0].balance - totalPrice,
       },
     });
 

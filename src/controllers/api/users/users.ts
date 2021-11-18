@@ -1,11 +1,10 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import "source-map-support/register";
 import { prisma } from "../../../shared";
-import { IUser } from "src/interfaces/IUser";
 var uuid = require("uuid");
 
 export const users: APIGatewayProxyHandler = async (event, _context) => {
-  const users = (await prisma.user.findMany()) as IUser;
+  const users = await prisma.client.findMany();
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -18,10 +17,10 @@ export const users: APIGatewayProxyHandler = async (event, _context) => {
   };
 };
 export const user: APIGatewayProxyHandler = async (event, _context) => {
-  const requestBody = JSON.parse(event.body) as IUser;
-  const userFilter = await prisma.user.findMany({
+  const requestBody = JSON.parse(event.body);
+  const userFilter = await prisma.client.findMany({
     where: {
-      Email: requestBody.Email,
+      email: requestBody.email,
     },
   });
   if (userFilter.length > 0) {
@@ -39,7 +38,7 @@ export const user: APIGatewayProxyHandler = async (event, _context) => {
     };
   }
 
-  const user = await prisma.user.create({
+  const user = await prisma.client.create({
     data: requestBody,
   });
   return {
@@ -60,9 +59,9 @@ export const increaseBalance: APIGatewayProxyHandler = async (
 ) => {
   const { userId } = event.queryStringParameters;
   const requestBody = JSON.parse(event.body);
-  const userFilter = await prisma.user.findUnique({
+  const userFilter = await prisma.client.findMany({
     where: {
-      id: userId,
+      id: Number(userId),
     },
   });
   if (userFilter.length < 1) {
@@ -79,12 +78,12 @@ export const increaseBalance: APIGatewayProxyHandler = async (
       ),
     };
   } else {
-    await prisma.user.updateMany({
+    await prisma.client.updateMany({
       where: {
-        id: userId,
+        id: Number(userId),
       },
       data: {
-        balance: requestBody.balance + userFilter.balance,
+        balance: requestBody.balance + userFilter[0].balance,
       },
     });
     return {
@@ -106,13 +105,13 @@ export const transferMoney: APIGatewayProxyHandler = async (
   _context
 ) => {
   const requestBody = JSON.parse(event.body);
-  const debitUserDB = await prisma.user.findUnique({
+  const debitUserDB = await prisma.client.findUnique({
     where: {
       id: requestBody.debitUser,
     },
   });
 
-  const userToTransferDB = await prisma.user.findUnique({
+  const userToTransferDB = await prisma.client.findUnique({
     where: {
       id: requestBody.userToTransfer,
     },
@@ -143,7 +142,7 @@ export const transferMoney: APIGatewayProxyHandler = async (
         body: JSON.stringify(
           {
             successful: false,
-            error: `El usuario ${debitUserDB.Name} no tiene saldo suficiente para transferir`,
+            error: `El usuario ${debitUserDB.name} no tiene saldo suficiente para transferir`,
             reference: uuid.v1(),
           },
           null,
@@ -151,7 +150,7 @@ export const transferMoney: APIGatewayProxyHandler = async (
         ),
       };
     } else {
-      await prisma.user.updateMany({
+      await prisma.client.updateMany({
         where: {
           id: debitUserDB.id,
         },
@@ -159,7 +158,7 @@ export const transferMoney: APIGatewayProxyHandler = async (
           balance: debitUserDB.balance - requestBody.amountToTransfer,
         },
       });
-      await prisma.user.updateMany({
+      await prisma.client.updateMany({
         where: {
           id: userToTransferDB.id,
         },

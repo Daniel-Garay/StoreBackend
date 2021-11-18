@@ -25,11 +25,11 @@ describe("/All Enpoints", () => {
   });
   //Create purchase order
   it("POST /purchase order", () => {
-    const userId = "61904cb7320c4da68bb8d366";
+    const userId = 1;
     const objPurchaseOrder = {
       products: [
-        { id: "6191a2d6320c4da68bb8d375", quantity: 1 },
-        { id: "6191a578320c4da68bb8d376", quantity: 2 },
+        { id: 1, quantity: 1 },
+        { id: 2, quantity: 2 },
       ],
     };
     return request
@@ -40,7 +40,7 @@ describe("/All Enpoints", () => {
   });
   //increaseBalance
   it("POST /increaseBalance", () => {
-    const userId = "61904cb7320c4da68bb8d366";
+    const userId = 1;
     const objIncreaseBalance = {
       balance: 2,
     };
@@ -53,8 +53,8 @@ describe("/All Enpoints", () => {
   //transferMoney
   it("POST /transferMoney", () => {
     const objIncreaseBalance = {
-      debitUser: "61904cb7320c4da68bb8d366",
-      userToTransfer: "61906488dfa2275384af2fcc",
+      debitUser: 1,
+      userToTransfer: 2,
       amountToTransfer: 1,
     };
     return request

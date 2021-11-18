@@ -1,39 +1,38 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["mongoDb"]
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL") 
 }
 
-model User {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  Name      String   
-  Email     String
+model client {
+  id        Int @id @default(autoincrement())
+  name       String   
+  email      String
   balance   Int
 }
 
-model Product {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  Description      String   
-  Price   Int
-  Sku     String
+model product {
+  id        Int @id @default(autoincrement())
+  description      String   
+  price   Int
+  sku     String
 }
 
-model PurchaseOrder {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  UserId      String   
-  CreationDate DateTime @default(now())
-  TotalPrice   Int
+model purchaseOrders {
+  id        Int @id @default(autoincrement())
+  userId      Int   
+  creationDate  DateTime @default(now())
+  totalPrice    Int
 }
 
-model PurchaseOrderItems {
-  id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-  PurchaseOrderId      String   
-  ProductId            String
-  Quantity   Int
-  Total   Int
+model purchaseOrderItems {
+  id        Int @id @default(autoincrement())
+  purchaseOrderId      Int   
+  productId            Int
+  quantity   Int
+  total   Int
 }
 

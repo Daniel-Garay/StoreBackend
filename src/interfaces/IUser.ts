@@ -1,6 +1,6 @@
 export interface IUser {
   id: string;
-  Name: string;
-  Email: string;
+  name: string;
+  email: string;
   balance: number;
 }
