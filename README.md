@@ -27,3 +27,32 @@ Para iniciar la ejecución del server en modo desarrollo se debe ejecutar el sig
 ```
 npm run dev
 ```
+
+### Pruebas Unitarias 🚀
+
+Para iniciar la ejecución de las pruebas se debe tener el proyecto corriendo previamente y despues ejecutar el siguiente comando:
+
+```
+npm  test
+```
+
+### Enpoinds con pruebas unitarias 🚀
+
+Los siguientes son los Enpoint desarrollados y que tienen pruebas unitarias :
+
+```
+GET /All Products
+POST /create User
+POST /purchase order
+POST /increaseBalance
+POST /transferMoney
+```
+
+### Enpoinds sin pruebas unitarias 🚀
+
+Los siguientes son los Enpoint desarrollados y que no tienen pruebas unitarias :
+
+```
+GET /All GetUsers
+GET /getPurchaseOrder
+```
